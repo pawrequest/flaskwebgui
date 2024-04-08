@@ -11,9 +11,8 @@ import multiprocessing
 from multiprocessing import Process
 from threading import Thread
 from dataclasses import dataclass
-from typing import Callable, Any, List, Union, Dict
+from typing import Any, Callable, Dict, List, Union
 from contextlib import suppress
-
 
 FLASKWEBGUI_USED_PORT = None
 FLASKWEBGUI_BROWSER_PROCESS = None
@@ -194,6 +193,7 @@ class FlaskUI:
     browser_command: List[str] = None
     socketio: Any = None
     profile_dir_prefix: str = "flaskwebgui"
+    url_suffix: str = None
 
     def __post_init__(self):
         self.__keyboard_interrupt = False
@@ -218,10 +218,11 @@ class FlaskUI:
         self.profile_dir = os.path.join(
             tempfile.gettempdir(), self.profile_dir_prefix + uuid.uuid4().hex
         )
-        self.url = f"http://127.0.0.1:{self.port}"
+        base_url = f"http://127.0.0.1:{self.port}"
+        self.url = f"{base_url}/{self.url_suffix}" if self.url_suffix else base_url
 
         self.browser_path = (
-            self.browser_path or browser_path_dispacher.get(OPERATING_SYSTEM)()
+                self.browser_path or browser_path_dispacher.get(OPERATING_SYSTEM)()
         )
         self.browser_command = self.browser_command or self.get_browser_command()
 
