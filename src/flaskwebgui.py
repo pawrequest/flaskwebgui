@@ -46,14 +46,14 @@ def close_application():
 
 def find_browser_on_linux():
     paths = [
+        r"/usr/bin/google-chrome",
         r"/usr/bin/brave-browser",
         r"/usr/bin/chromium",
-        r"/usr/bin/google-chrome",
         r"/usr/bin/microsoft-edge-stable",
         r"/usr/bin/microsoft-edge",
+        r"/snap/bin/google-chrome",
         r"/snap/bin/brave-browser",
         r"/snap/bin/chromium",
-        r"/snap/bin/google-chrome",
         r"/snap/bin/microsoft-edge-stable",
         r"/snap/bin/microsoft-edge",
     ]
@@ -76,8 +76,8 @@ def find_browser_on_linux():
 
 def find_browser_on_mac():
     paths = [
-        r"/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
         r"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        r"/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
         r"/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
     ]
     for path in paths:
@@ -88,8 +88,8 @@ def find_browser_on_mac():
 
 def find_browser_on_windows():
     paths = [
-        r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe",
         r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+        r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe",
         r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
         r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
     ]
