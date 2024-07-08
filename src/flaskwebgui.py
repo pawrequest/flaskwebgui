@@ -1,4 +1,5 @@
 import os
+import shutil
 import time
 import uuid
 import signal
@@ -11,7 +12,7 @@ import multiprocessing
 from multiprocessing import Process
 from threading import Thread
 from dataclasses import dataclass
-from typing import Callable, Any, List, Union, Dict
+from typing import Any, Callable, Dict, List, Union
 from contextlib import suppress
 
 
@@ -20,6 +21,15 @@ FLASKWEBGUI_BROWSER_PROCESS = None
 
 OPERATING_SYSTEM = platform.system().lower()
 PY = "python3" if OPERATING_SYSTEM in ["linux", "darwin"] else "python"
+
+TEMP_DIRS_CREATED = []
+
+
+def cleanup_temp_dirs():
+    for dir_path in TEMP_DIRS_CREATED:
+        if os.path.exists(dir_path):
+            print(f'Removing Temp dir {dir_path}')
+            shutil.rmtree(dir_path, ignore_errors=True)
 
 
 def get_free_port():
@@ -96,10 +106,10 @@ def find_browser_on_mac():
 
 def find_browser_on_windows():
     paths = [
-        r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
-        r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
         r"C:\Program Files\Google\Chrome\Application\chrome.exe",
         r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe",
+        r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
+        r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
     ]
     for path in paths:
         if os.path.exists(path):
@@ -202,6 +212,7 @@ class FlaskUI:
     browser_command: List[str] = None
     socketio: Any = None
     profile_dir_prefix: str = "flaskwebgui"
+    url_suffix: str = None
 
     def __post_init__(self):
         self.__keyboard_interrupt = False
@@ -226,10 +237,12 @@ class FlaskUI:
         self.profile_dir = os.path.join(
             tempfile.gettempdir(), self.profile_dir_prefix + uuid.uuid4().hex
         )
-        self.url = f"http://127.0.0.1:{self.port}"
+        TEMP_DIRS_CREATED.append(self.profile_dir)
+        base_url = f"http://127.0.0.1:{self.port}"
+        self.url = f"{base_url}/{self.url_suffix}" if self.url_suffix else base_url
 
         self.browser_path = (
-            self.browser_path or browser_path_dispacher.get(OPERATING_SYSTEM)()
+                self.browser_path or browser_path_dispacher.get(OPERATING_SYSTEM)()
         )
         self.browser_command = self.browser_command or self.get_browser_command()
 
@@ -271,11 +284,15 @@ class FlaskUI:
         if isinstance(server_process, Process):
             if self.on_shutdown is not None:
                 self.on_shutdown()
+            cleanup_temp_dirs()
             server_process.kill()
+
         else:
             if self.on_shutdown is not None:
                 self.on_shutdown()
+            cleanup_temp_dirs()
             kill_port(self.port)
+
 
     def run(self):
         if self.on_startup is not None:
