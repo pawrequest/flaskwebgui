@@ -1,8 +1,8 @@
 import os
+import shutil
 import time
 import uuid
 import signal
-import psutil
 import tempfile
 import platform
 import subprocess
@@ -14,11 +14,20 @@ from dataclasses import dataclass
 from typing import Any, Callable, Dict, List, Union
 from contextlib import suppress
 
+import psutil
+
 FLASKWEBGUI_USED_PORT = None
 FLASKWEBGUI_BROWSER_PROCESS = None
-
 OPERATING_SYSTEM = platform.system().lower()
 PY = "python3" if OPERATING_SYSTEM in ["linux", "darwin"] else "python"
+
+TEMP_DIRS_CREATED = []
+
+
+def cleanup_temp_dirs():
+    for dir_path in TEMP_DIRS_CREATED:
+        if os.path.exists(dir_path):
+            shutil.rmtree(dir_path, ignore_errors=True)
 
 
 def get_free_port():
@@ -42,6 +51,7 @@ def close_application():
         FLASKWEBGUI_BROWSER_PROCESS.terminate()
 
     kill_port(FLASKWEBGUI_USED_PORT)
+    cleanup_temp_dirs()
 
 
 def find_browser_on_linux():
@@ -218,6 +228,7 @@ class FlaskUI:
         self.profile_dir = os.path.join(
             tempfile.gettempdir(), self.profile_dir_prefix + uuid.uuid4().hex
         )
+        TEMP_DIRS_CREATED.append(self.profile_dir)
         base_url = f"http://127.0.0.1:{self.port}"
         self.url = f"{base_url}/{self.url_suffix}" if self.url_suffix else base_url
 
