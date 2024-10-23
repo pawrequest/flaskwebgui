@@ -196,6 +196,7 @@ class FlaskUI:
     profile_dir_prefix: str = "flaskwebgui"
     app_mode: bool = True
     browser_pid: int = None
+    url_suffix = None
 
     def __post_init__(self):
         self.__keyboard_interrupt = False
@@ -220,7 +221,8 @@ class FlaskUI:
         self.profile_dir = os.path.join(
             tempfile.gettempdir(), self.profile_dir_prefix + uuid.uuid4().hex
         )
-        self.url = f"http://127.0.0.1:{self.port}"
+        self.base_url = f"http://127.0.0.1:{self.port}"
+        self.url = f"{self.base_url}/{self.url_suffix}" if self.url_suffix else self.base_url
 
         self.browser_path = (
             self.browser_path or browser_path_dispacher.get(OPERATING_SYSTEM)()
