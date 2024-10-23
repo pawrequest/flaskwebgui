@@ -196,7 +196,7 @@ class FlaskUI:
     profile_dir_prefix: str = "flaskwebgui"
     app_mode: bool = True
     browser_pid: int = None
-    url_suffix = None
+    url_suffix: str = None
 
     def __post_init__(self):
         self.__keyboard_interrupt = False
