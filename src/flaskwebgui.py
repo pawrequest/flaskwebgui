@@ -50,8 +50,9 @@ mac_browser_paths = [
 windows_browser_paths = [
     r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe",
     r"C:\Program Files\Google\Chrome\Application\chrome.exe",
-    r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+    r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
     r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
+    r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
 ]
 
 
